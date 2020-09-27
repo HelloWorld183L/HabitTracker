@@ -6,7 +6,6 @@ open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2
 open Giraffe
 open Saturn
-open HabitTracker.Domain.Habits
 
 let tryGetEnv key = 
     match Environment.GetEnvironmentVariable key with
@@ -22,9 +21,7 @@ let port =
 let webApp = router {
     get "/api/init" (fun next ctx ->
         task {
-            let emptyHabitSheet = Some {
-                Habits = []
-            }
+            let emptyHabitSheet = []
             return! json emptyHabitSheet next ctx
         }
     )

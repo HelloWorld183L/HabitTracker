@@ -5,17 +5,16 @@
         <DefineConstants>FABLE_COMPILER</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="ViewHelpers.fs" />
+        <Compile Include="HabitSheet\Types.fs" />
+        <Compile Include="HabitSheet\State.fs" />
+        <Compile Include="HabitSheet\View.fs" />
+        <Compile Include="StartApp.fs" />
         <None Include="index.html" />
         <None Include="paket.references" />
         <None Include="style.scss" />
-        <Compile Include="Client.fs" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Fulma.Extensions.Wikiki.Checkradio" Version="2.0.1" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\HabitTracker.Domain\HabitTracker.Domain.fsproj" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

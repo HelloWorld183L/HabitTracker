@@ -9,9 +9,6 @@
         <Compile Include="Server.fs" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\HabitTracker.Domain\HabitTracker.Domain.fsproj" />
-    </ItemGroup>
-    <ItemGroup>
       <PackageReference Update="FSharp.Core" Version="4.7.2" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
