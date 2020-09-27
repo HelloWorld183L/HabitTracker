@@ -3,9 +3,9 @@ module Types
 type Habit = { Name: string; Description: string; DaysChecked: Map<int, bool> }
 
 type HabitSheet = Habit list
-type HabitSheetModel = { HabitSheet: HabitSheet option; HighlightedMonth: string; HabitModalIsActive: bool }
+type HabitSheetState = { HabitSheet: HabitSheet option; HighlightedMonth: string; HabitModalIsActive: bool }
 
-type Msg =
+type StateChangeMsg =
     | HabitAdded of Habit
     | HabitDeleted of string
     | HabitDayChecked of Habit

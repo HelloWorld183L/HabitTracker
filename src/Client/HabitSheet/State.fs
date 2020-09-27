@@ -20,20 +20,20 @@ let emptyHabitSheet = {
 }
 
 [<ImportAll("C:/Users/Leon/source/repos/HabitTracker/fableInterop.js")>]
-let jsNative : IJsNative = jsNative
+let jsNative' : IJsNative = jsNative
 
-let init () : HabitSheetModel * Cmd<Msg> =
+let init () : HabitSheetState * Cmd<StateChangeMsg> =
     let loadHabitSheetCmd =
         Cmd.OfPromise.perform initialHabitSheet () SheetLoaded
     emptyHabitSheet, loadHabitSheetCmd
 
 let addHabit dispatch =
-    let habitName = jsNative.triggerPrompt "Enter the habit's name to be added"
+    let habitName = jsNative'.triggerPrompt "Enter the habit's name to be added"
     let habit = { Name = habitName; Description = ""; DaysChecked = initialDaysCheckedMap; }
     dispatch (HabitAdded habit)
 
 let deleteHabit dispatch =
-    let habitName = jsNative.triggerPrompt "Enter the habit's name to be deleted"
+    let habitName = jsNative'.triggerPrompt "Enter the habit's name to be deleted"
     dispatch (HabitDeleted habitName)
 
 let createHabitDayCheckMsg habit index =
@@ -42,14 +42,14 @@ let createHabitDayCheckMsg habit index =
     let newDaysChecked = habit.DaysChecked.Add (index, invertedDayCheck)
     HabitDayChecked { habit with DaysChecked = newDaysChecked }
 
-let update msg currentHabitSheetModel : HabitSheetModel * Cmd<Msg> =
+let update msg currentHabitSheetModel : HabitSheetState * Cmd<StateChangeMsg> =
     match currentHabitSheetModel.HabitSheet, msg with
     | Some currentHabitSheet, HabitAdded newHabit ->
         let containsHabit = currentHabitSheet |> List.contains newHabit
         let isEmpty = newHabit.Name |> String.IsNullOrWhiteSpace
         
         if containsHabit || isEmpty then
-            jsNative.triggerAlert("Invalid habit name. Check if the habit already exists or if you entered an empty input.")
+            jsNative'.triggerAlert("Invalid habit name. Check if the habit already exists or if you entered an empty input.")
             currentHabitSheetModel, Cmd.none
         else
             let newHabitSheet = [newHabit] |> List.append currentHabitSheet
@@ -68,7 +68,7 @@ let update msg currentHabitSheetModel : HabitSheetModel * Cmd<Msg> =
             let newHabitSheetModel = { currentHabitSheetModel with HabitSheet = Some newHabitSheet}
             newHabitSheetModel, Cmd.none
         else
-            jsNative.triggerAlert("Invalid habit name. Check if the habit already exists or if you entered an empty input.")
+            jsNative'.triggerAlert("Invalid habit name. Check if the habit already exists or if you entered an empty input.")
             currentHabitSheetModel, Cmd.none
 
     | Some currentHabitSheet, HabitDayChecked habitToEdit ->

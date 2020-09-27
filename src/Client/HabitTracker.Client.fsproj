@@ -1,20 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <DefineConstants>FABLE_COMPILER</DefineConstants>
-    </PropertyGroup>
-    <ItemGroup>
-        <Compile Include="HabitSheet\Types.fs" />
-        <Compile Include="HabitSheet\State.fs" />
-        <Compile Include="HabitSheet\View.fs" />
-        <Compile Include="StartApp.fs" />
-        <None Include="index.html" />
-        <None Include="paket.references" />
-        <None Include="style.scss" />
-    </ItemGroup>
-    <ItemGroup>
-      <PackageReference Include="Fulma.Extensions.Wikiki.Checkradio" Version="2.0.1" />
-    </ItemGroup>
-    <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="HabitSheet/Types.fs" />
+    <Compile Include="HabitSheet/State.fs" />
+    <Compile Include="HabitSheet/View.fs" />
+    <Compile Include="StartApp.fs" />
+    <None Include="index.html" />
+    <None Include="paket.references" />
+    <None Include="style.scss" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fulma.Extensions.Wikiki.Checkradio" Version="2.0.1" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

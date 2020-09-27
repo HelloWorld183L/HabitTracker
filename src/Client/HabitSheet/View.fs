@@ -44,7 +44,7 @@ let checkBox isChecked onChange checkBoxId =
         if isChecked then Checkradio.Checked true
         else Checkradio.Checked false ] []
 
-let view (habitSheetModel : HabitSheetModel) (dispatch : Msg -> unit) =
+let view (habitSheetModel : HabitSheetState) (dispatch : StateChangeMsg -> unit) =
     let habitSheet = habitSheetModel.HabitSheet.Value
 
     body [] [
@@ -61,7 +61,7 @@ let view (habitSheetModel : HabitSheetModel) (dispatch : Msg -> unit) =
                                 ]
                                 Level.item [] [
                                     button "Clear habit sheet" IsPrimary (fun _ ->
-                                                                    let shouldClear = jsNative.triggerConfirm "Are you sure you wish to clear the habit sheet?"
+                                                                    let shouldClear = jsNative'.triggerConfirm "Are you sure you wish to clear the habit sheet?"
                                                                     if shouldClear then dispatch ResetHabitSheet)
                                 ]
                             ]

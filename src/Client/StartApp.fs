@@ -7,6 +7,7 @@ open Fable.Core
 open Elmish
 open Fable.Core
 open View
+open State
 #endif
 
 Fable.Core.JsInterop.importAll "C:/Users/Leon/source/repos/HabitTracker/src/Client/style.scss"
