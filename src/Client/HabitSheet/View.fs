@@ -79,9 +79,7 @@ let view (habitSheetModel : HabitSheetState) (dispatch : StateChangeMsg -> unit)
                             ]
                         ]
                         
-                        Table.table [ Table.IsHoverable
-                                      Table.IsFullWidth 
-                                    ]
+                        Table.table [ Table.IsFullWidth ]
                             [
                                 tbody [] [
                                     tr [] [
@@ -96,6 +94,7 @@ let view (habitSheetModel : HabitSheetState) (dispatch : StateChangeMsg -> unit)
                                                 habitModal toggleHabitModalMsg habitSheetModel.HabitModalIsActive habit
                                                 button habit.Name IsWhite toggleHabitModalMsg
                                             ]
+                                            
                                             for i = 1 to 31 do
                                                 let habitDayCheckMsg = createHabitDayCheckMsg habit (i)
                                                 let isChecked = habit.DaysChecked.ContainsKey (i) &&
