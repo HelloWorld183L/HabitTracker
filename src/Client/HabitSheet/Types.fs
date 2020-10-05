@@ -6,9 +6,23 @@ type Habit =
       Description: string 
       DaysChecked: Map<int, bool> }
 
+    static member InitialDaysChecked =
+        seq { 1 .. 31 }
+        |> Seq.fold (fun (mapState : Map<int, bool>) i -> mapState.Add(i, false)) Map.empty
+
 type HabitSheet = Habit list
 type HabitModal = ReactElement
-type HabitSheetState = { HabitSheet: HabitSheet option; HighlightedMonth: string; ActiveHabitName: string option }
+type HabitSheetState = 
+    { HabitSheet: HabitSheet option
+      HighlightedMonth: string
+      ActiveHabitName: string option }
+    
+    static member InitialState =
+        { 
+            HabitSheet = Some []
+            HighlightedMonth = "January"
+            ActiveHabitName = None
+        }
 
 type StateChangeMsg =
     | AddHabit of Habit

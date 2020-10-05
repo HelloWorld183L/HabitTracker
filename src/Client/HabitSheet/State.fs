@@ -9,25 +9,15 @@ open Fable.Core
 
 let initialHabitSheet () = Fetch.fetchAs<unit, HabitSheet> "/api/init"
 
-let initialDaysCheckedMap =
-    seq { 1 .. 31 }
-    |> Seq.fold (fun (mapState : Map<int, bool>) i -> mapState.Add(i, false)) Map.empty
-
-let initialHabitSheetState = {
-    HabitSheet = Some []
-    HighlightedMonth = "January"
-    ActiveHabitName = None
-}
-
 [<ImportAll("E:/Programming shit/HabitTracker/fableInterop.js")>]
 let jsNative' : IJsNative = jsNative
 
 let init () : HabitSheetState * Cmd<StateChangeMsg> =
-    initialHabitSheetState, Cmd.none
+    HabitSheetState.InitialState, Cmd.none
 
 let createAddHabit dispatch =
     let habitName = jsNative'.triggerPrompt "Enter the habit's name to be added"
-    let habit = { Name = habitName; Description = ""; DaysChecked = initialDaysCheckedMap; }
+    let habit = { Name = habitName; Description = ""; DaysChecked = Habit.InitialDaysChecked; }
     dispatch (AddHabit habit)
 
 let createDeleteHabit dispatch =
@@ -83,9 +73,9 @@ let update msg currentHabitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
         { currentHabitSheetState with ActiveHabitName = newActiveHabitName }, Cmd.none
 
     | ResetHabitSheet, _ ->
-        initialHabitSheetState, Cmd.none
+        HabitSheetState.InitialState, Cmd.none
 
     | SheetLoaded _, _ ->
         let newHabitSheetState = { currentHabitSheetState with HighlightedMonth = 
-                                   initialHabitSheetState.HighlightedMonth }
+                                   HabitSheetState.InitialState.HighlightedMonth }
         newHabitSheetState, Cmd.none
