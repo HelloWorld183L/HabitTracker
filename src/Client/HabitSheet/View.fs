@@ -100,15 +100,15 @@ let clearSheetDropdownComponent dispatch =
         ]
         Dropdown.menu [] [
             Dropdown.content [] [
+                let confirmThenDispatch confirmMsg stateMsg =
+                    (fun _ ->
+                        let shouldClear = jsNative'.triggerConfirm confirmMsg
+                        if shouldClear then dispatch stateMsg)
                 Dropdown.Item.a [] [
-                    button "Reset current sheet" IsPrimary (fun _ ->
-                                    let shouldClear = jsNative'.triggerConfirm "Are you sure you wish to reset the current habit sheet?"
-                                    if shouldClear then dispatch ResetHabitSheet)
+                    button "Reset current sheet" IsPrimary (confirmThenDispatch "Are you sure you wish to reset the current habit sheet?" ResetHabitSheet)
                 ]
                 Dropdown.Item.a [] [
-                    button "Reset all habit sheets" IsPrimary (fun _ ->
-                                    let shouldClear = jsNative'.triggerConfirm "Are you sure you wish to reset all habit sheets?"
-                                    if shouldClear then dispatch ResetHabitSheets)
+                    button "Reset all habit sheets" IsPrimary (confirmThenDispatch "Are you sure you wish to reset all the habit sheets?" ResetHabitSheets)
                 ]
             ]
         ]
