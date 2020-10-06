@@ -6,6 +6,7 @@ open Thoth
 open Thoth.Fetch
 open System
 open Fable.Core
+open HabitTracker.Domain.Types
 
 let initialHabitSheet () = Fetch.fetchAs<unit, HabitSheet> "/api/init"
 

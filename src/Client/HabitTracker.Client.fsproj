@@ -13,6 +13,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Fulma.Extensions.Wikiki.Checkradio" Version="2.0.1" />
+    <PackageReference Include="HabitTracker.Domain" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HabitTracker.Domain\HabitTracker.Domain.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

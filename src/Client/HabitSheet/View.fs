@@ -7,6 +7,7 @@ open Fulma.Extensions.Wikiki
 open Types
 open State
 open Fable.FontAwesome
+open HabitTracker.Domain.Types
 
 let button txt color onClick =
     Button.button

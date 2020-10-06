@@ -7,9 +7,17 @@
     <ItemGroup>
         <None Include="paket.references" />
         <Compile Include="Server.fs" />
+        <Compile Include="DataStorage.fs" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Update="FSharp.Core" Version="4.7.2" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="LiteDB" Version="5.0.9" />
+      <PackageReference Include="LiteDB.FSharp" Version="2.15.1" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\HabitTracker.Domain\HabitTracker.Domain.fsproj" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
