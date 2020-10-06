@@ -89,3 +89,6 @@ let update msg habitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
             habitSheetState.HabitSheets
             |> Map.add habitSheetState.HighlightedMonth (Some [])
         { habitSheetState with CurrentHabitSheet = Some []; ActiveHabitName = None; HabitSheets = newHabitSheets }, Cmd.none
+    
+    | ResetHabitSheets, _ ->
+        HabitSheetState.InitialState, Cmd.none

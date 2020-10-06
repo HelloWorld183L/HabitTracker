@@ -45,6 +45,7 @@ type StateChangeMsg =
     | HabitDayChecked of Habit
     | SwitchHabitSheet of Month
     | ResetHabitSheet
+    | ResetHabitSheets
     | ToggleHabitModal of string option
 
 type IJsNative =

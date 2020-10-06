@@ -6,6 +6,7 @@ open Fulma
 open Fulma.Extensions.Wikiki
 open Types
 open State
+open Fable.FontAwesome
 
 let button txt color onClick =
     Button.button
@@ -74,11 +75,42 @@ let habitSheetTableContentComponent dispatch habitSheetState habit =
             habitSheetDayComponent dispatch habit i
     ]
 
-let habitSheetMonthsComponent dispatch =
+let habitSheetMonthsComponent dispatch highlightableMonth =
     div [] [
         Button.list [ Button.List.AreLarge ] [
             for month in HabitSheetState.HighlightableMonths do
-                button month IsDanger (fun _ -> dispatch (SwitchHabitSheet month))
+                let switchHabitSheetDispatch = (fun _ -> dispatch (SwitchHabitSheet month))
+                if month = highlightableMonth then
+                    button month IsPrimary switchHabitSheetDispatch
+                else
+                    button month IsDanger switchHabitSheetDispatch
+        ]
+    ]
+
+let clearSheetDropdownComponent dispatch =
+    Dropdown.dropdown [ Dropdown.IsHoverable ] [
+        Dropdown.trigger [] [
+            Button.button [] [
+                span [] [ str "Reset habit sheet(s)" ]
+                Icon.icon [ Icon.Size IsSmall ] [
+                    Fa.i [ Fa.Solid.AngleDown ]
+                        []
+                ]
+            ]
+        ]
+        Dropdown.menu [] [
+            Dropdown.content [] [
+                Dropdown.Item.a [] [
+                    button "Reset current sheet" IsPrimary (fun _ ->
+                                    let shouldClear = jsNative'.triggerConfirm "Are you sure you wish to reset the current habit sheet?"
+                                    if shouldClear then dispatch ResetHabitSheet)
+                ]
+                Dropdown.Item.a [] [
+                    button "Reset all habit sheets" IsPrimary (fun _ ->
+                                    let shouldClear = jsNative'.triggerConfirm "Are you sure you wish to reset all habit sheets?"
+                                    if shouldClear then dispatch ResetHabitSheets)
+                ]
+            ]
         ]
     ]
 
@@ -92,9 +124,7 @@ let headerComponent dispatch =
                     ]
                 ]
                 Level.item [] [
-                    button "Clear habit sheet" IsPrimary (fun _ ->
-                                                    let shouldClear = jsNative'.triggerConfirm "Are you sure you wish to clear the habit sheet?"
-                                                    if shouldClear then dispatch ResetHabitSheet)
+                    clearSheetDropdownComponent dispatch
                 ]
             ]
         ]
@@ -104,12 +134,11 @@ let view (habitSheetState : HabitSheetState) (dispatch : StateChangeMsg -> unit)
     let habitSheet = habitSheetState.CurrentHabitSheet.Value
     
     body [] [
-        Container.container [ Container.IsFluid ]
-            [
+        Container.container [ Container.IsFluid ] [
                 Content.content [] [
                     headerComponent dispatch
                     
-                    habitSheetMonthsComponent dispatch
+                    habitSheetMonthsComponent dispatch habitSheetState.HighlightedMonth
                     Table.table [ Table.IsFullWidth ]
                         [
                             tbody [] [
