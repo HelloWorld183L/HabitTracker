@@ -76,12 +76,9 @@ let habitSheetTableContentComponent dispatch habitSheetState habit =
 
 let habitSheetMonthsComponent dispatch =
     div [] [
-        let highlightableMonths = ["JAN"; "FEB"; "MAR"; "APR";
-                                   "MAY"; "JUN"; "JUL"; "AUG";
-                                   "SEP"; "OCT"; "NOV"; "DEC" ]
         Button.list [ Button.List.AreLarge ] [
-            for month in highlightableMonths do
-                button month IsPrimary (fun _ -> dispatch (SwitchHabitSheet month))
+            for month in HabitSheetState.HighlightableMonths do
+                button month IsDanger (fun _ -> dispatch (SwitchHabitSheet month))
         ]
     ]
 
@@ -104,7 +101,7 @@ let headerComponent dispatch =
     ]
 
 let view (habitSheetState : HabitSheetState) (dispatch : StateChangeMsg -> unit) =
-    let habitSheet = habitSheetState.HabitSheet.Value
+    let habitSheet = habitSheetState.CurrentHabitSheet.Value
     
     body [] [
         Container.container [ Container.IsFluid ]

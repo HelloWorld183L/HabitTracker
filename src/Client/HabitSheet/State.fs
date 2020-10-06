@@ -30,18 +30,21 @@ let createHabitDayCheckMsg habit index =
     let newDaysChecked = habit.DaysChecked.Add (index, invertedDayCheck)
     HabitDayChecked { habit with DaysChecked = newDaysChecked }
 
-let update msg currentHabitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
+let update msg habitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
     let triggerAlertCmd = Cmd.ofSub (fun _ -> jsNative'.triggerAlert "Invalid habit name. Check if the habit already exists or if you entered an empty input.")
-    match msg, currentHabitSheetState.HabitSheet with
+    match msg, habitSheetState.CurrentHabitSheet with
     | AddHabit newHabit, Some currentHabitSheet ->
         let containsHabit = currentHabitSheet |> List.contains newHabit
         let isEmpty = newHabit.Name |> String.IsNullOrWhiteSpace
         
         if containsHabit || isEmpty then
-            currentHabitSheetState, triggerAlertCmd
+            habitSheetState, triggerAlertCmd
         else
-            let newHabitSheet = [newHabit] |> List.append currentHabitSheet
-            { currentHabitSheetState with HabitSheet = Some newHabitSheet }, Cmd.none
+            let newHabitSheet : HabitSheet = [newHabit] |> List.append currentHabitSheet
+            let newHabitSheets =
+                (Some newHabitSheet, habitSheetState.HabitSheets)
+                ||> Map.add habitSheetState.HighlightedMonth
+            { habitSheetState with CurrentHabitSheet = Some newHabitSheet; HabitSheets = newHabitSheets }, Cmd.none
 
     | DeleteHabit habitName, Some currentHabitSheet ->
         let validHabitName = habitName |> String.IsNullOrWhiteSpace |> not
@@ -52,9 +55,12 @@ let update msg currentHabitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
                     |> List.find (fun habit -> habit.Name = habitName)
                     |> Seq.singleton
                 List.except habit currentHabitSheet
-            { currentHabitSheetState with HabitSheet = Some newHabitSheet }, Cmd.none
+            let newHabitSheets =
+                (Some newHabitSheet, habitSheetState.HabitSheets)
+                ||> Map.add habitSheetState.HighlightedMonth
+            { habitSheetState with CurrentHabitSheet = Some newHabitSheet; HabitSheets = newHabitSheets }, Cmd.none
         else
-            currentHabitSheetState, triggerAlertCmd
+            habitSheetState, triggerAlertCmd
 
     | HabitDayChecked habitToEdit, Some currentHabitSheet ->
         let updatedHabitSheet = 
@@ -64,18 +70,22 @@ let update msg currentHabitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
                        { currentHabit with DaysChecked = habitToEdit.DaysChecked }
                    else currentHabit
                 )
-        { currentHabitSheetState with HabitSheet = Some updatedHabitSheet }, Cmd.none
+        let newHabitSheets =
+            (Some updatedHabitSheet, habitSheetState.HabitSheets)
+            ||> Map.add habitSheetState.HighlightedMonth
+        { habitSheetState with CurrentHabitSheet = Some updatedHabitSheet; HabitSheets = newHabitSheets }, Cmd.none
 
     | SwitchHabitSheet newMonth, _ ->
-        { currentHabitSheetState with HighlightedMonth = newMonth }, Cmd.none
+        let newHabitSheet = 
+            habitSheetState.HabitSheets
+            |> Map.find newMonth
+        { habitSheetState with HighlightedMonth = newMonth; CurrentHabitSheet = newHabitSheet; ActiveHabitName = None }, Cmd.none
 
     | ToggleHabitModal newActiveHabitName, _  ->
-        { currentHabitSheetState with ActiveHabitName = newActiveHabitName }, Cmd.none
+        { habitSheetState with ActiveHabitName = newActiveHabitName }, Cmd.none
 
     | ResetHabitSheet, _ ->
-        HabitSheetState.InitialState, Cmd.none
-
-    | SheetLoaded _, _ ->
-        let newHabitSheetState = { currentHabitSheetState with HighlightedMonth = 
-                                   HabitSheetState.InitialState.HighlightedMonth }
-        newHabitSheetState, Cmd.none
+        let newHabitSheets = 
+            habitSheetState.HabitSheets
+            |> Map.add habitSheetState.HighlightedMonth (Some [])
+        { habitSheetState with CurrentHabitSheet = Some []; ActiveHabitName = None; HabitSheets = newHabitSheets }, Cmd.none

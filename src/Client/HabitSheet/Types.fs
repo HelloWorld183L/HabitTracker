@@ -1,36 +1,50 @@
 module Types
 open Fable.React
 
+type DayNum = int
+
 type Habit = 
     { Name: string
       Description: string 
-      DaysChecked: Map<int, bool> }
+      DaysChecked: Map<DayNum, bool> }
 
     static member InitialDaysChecked =
         seq { 1 .. 31 }
-        |> Seq.fold (fun (mapState : Map<int, bool>) i -> mapState.Add(i, false)) Map.empty
+        |> Seq.fold (fun (daysCheckedState : Map<DayNum, bool>) day -> 
+                        daysCheckedState.Add(day, false)) Map.empty
 
 type HabitSheet = Habit list
-type HabitModal = ReactElement
+type Month = string
 type HabitSheetState = 
-    { HabitSheet: HabitSheet option
-      HighlightedMonth: string
+    { 
+      HabitSheets: Map<Month, HabitSheet option>
+      CurrentHabitSheet: HabitSheet option
+      HighlightedMonth: Month
       ActiveHabitName: string option }
-    
+
     static member InitialState =
-        { 
-            HabitSheet = Some []
-            HighlightedMonth = "January"
+        {
+            HabitSheets = HabitSheetState.InitialHabitSheets 
+            CurrentHabitSheet = Some []
+            HighlightedMonth = "JAN"
             ActiveHabitName = None
         }
+    
+    static member private InitialHabitSheets =
+        HabitSheetState.HighlightableMonths
+        |> List.fold (fun (currentState : Map<Month, HabitSheet option>) month -> currentState.Add(month, Some [])) Map.empty
+
+    static member HighlightableMonths =
+        ["JAN"; "FEB"; "MAR"; "APR";
+         "MAY"; "JUN"; "JUL"; "AUG";
+         "SEP"; "OCT"; "NOV"; "DEC" ]
 
 type StateChangeMsg =
     | AddHabit of Habit
     | DeleteHabit of string
     | HabitDayChecked of Habit
-    | SwitchHabitSheet of string
+    | SwitchHabitSheet of Month
     | ResetHabitSheet
-    | SheetLoaded of HabitSheet
     | ToggleHabitModal of string option
 
 type IJsNative =
