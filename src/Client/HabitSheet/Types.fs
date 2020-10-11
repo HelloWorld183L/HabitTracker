@@ -9,6 +9,8 @@ type StateChangeMsg =
     | ResetHabitSheet
     | ResetHabitSheets
     | ToggleHabitModal of string option
+    | SheetLoaded of Map<Month, HabitSheet option>
+    | SaveChanges
 
 type IJsNative =
     abstract triggerPrompt: ?message: string -> string

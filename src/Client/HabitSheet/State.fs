@@ -8,13 +8,15 @@ open System
 open Fable.Core
 open HabitTracker.Domain.Types
 
-let initialHabitSheet () = Fetch.fetchAs<unit, HabitSheet> "/api/init"
+let initialHabitSheet () = Fetch.fetchAs<unit, Map<Month, HabitSheet option>> "/api/init"
 
 [<ImportAll("E:/Programming shit/HabitTracker/fableInterop.js")>]
 let jsNative' : IJsNative = jsNative
 
 let init () : HabitSheetState * Cmd<StateChangeMsg> =
-    HabitSheetState.InitialState, Cmd.none
+    let loadHabitSheetCmd =
+        Cmd.OfPromise.perform initialHabitSheet () SheetLoaded
+    HabitSheetState.InitialState, loadHabitSheetCmd
 
 let createAddHabit dispatch =
     let habitName = jsNative'.triggerPrompt "Enter the habit's name to be added"
@@ -30,6 +32,11 @@ let createHabitDayCheckMsg habit index =
     
     let newDaysChecked = habit.DaysChecked.Add (index, invertedDayCheck)
     HabitDayChecked { habit with DaysChecked = newDaysChecked }
+
+let saveChanges (habitSheets : Map<Month, HabitSheet option>) =
+    promise {
+        Fetch.post("/api/save", habitSheets)
+    }
 
 let update msg habitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
     let triggerAlertCmd = Cmd.ofSub (fun _ -> jsNative'.triggerAlert "Invalid habit name. Check if the habit already exists or if you entered an empty input.")
@@ -93,3 +100,16 @@ let update msg habitSheetState : HabitSheetState * Cmd<StateChangeMsg> =
     
     | ResetHabitSheets, _ ->
         HabitSheetState.InitialState, Cmd.none
+
+    | SheetLoaded habitSheets, _ ->
+        let newHabitSheetState = {
+                HabitSheets = habitSheets
+                CurrentHabitSheet = habitSheets.Item "JAN"
+                ActiveHabitName = None
+                HighlightedMonth = "JAN"
+            }
+        newHabitSheetState, Cmd.none
+    
+    | SaveChanges, _ ->
+        saveChanges habitSheetState.HabitSheets
+        habitSheetState, Cmd.ofSub (fun _ -> jsNative'.triggerAlert "Changes to the habitsheet(s) has been saved.")

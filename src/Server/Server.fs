@@ -1,11 +1,12 @@
+module Server
+
 open System.IO
-open System.Threading.Tasks
 open System
-open Microsoft.AspNetCore.Builder
-open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2
 open Giraffe
 open Saturn
+open DataStorage
+open HabitTracker.Domain.Types
 
 let tryGetEnv key = 
     match Environment.GetEnvironmentVariable key with
@@ -18,11 +19,26 @@ let port =
     "SERVER_PORT"
     |> tryGetEnv |> Option.map uint16 |> Option.defaultValue 8085us
 
+let dataStorage = Repository()
+
 let webApp = router {
     get "/api/init" (fun next ctx ->
         task {
-            let emptyHabitSheet = []
-            return! json emptyHabitSheet next ctx
+            let isNull' = DataStorage.isNull
+            let habitSheetsDAO = dataStorage.GetFirstHabitSheetsMap()
+            if isNull' habitSheetsDAO then 
+                return! json HabitSheetState.InitialState.HabitSheets next ctx
+            else
+                return! json habitSheetsDAO.HabitSheets next ctx
+        }
+    )
+
+    post "/api/save" (fun next ctx ->
+        task {
+            let! habitSheets = ctx.BindModelAsync<Map<Month, HabitSheet option>>()
+            let habitSheetsDAO = { Id = 1; HabitSheets = habitSheets }
+            dataStorage.Create habitSheetsDAO
+            return! json habitSheetsDAO next ctx
         }
     )
 }

@@ -155,6 +155,7 @@ let view (habitSheetState : HabitSheetState) (dispatch : StateChangeMsg -> unit)
                         ]
                     button "Add habit" IsSuccess (fun _ -> createAddHabit dispatch)
                     button "Delete habit" IsWarning (fun _ -> createDeleteHabit dispatch)
+                    button "Save changes" IsInfo (fun _ -> dispatch SaveChanges)
                 ]
             ]
     ]
